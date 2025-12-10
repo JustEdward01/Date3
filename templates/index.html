@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
@@ -25,6 +27,7 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            cursor: crosshair; /* FLAVOR: Cursor tactic */
         }
 
         body {
@@ -43,6 +46,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         .scanlines {
@@ -66,7 +70,7 @@
         .main-container {
             width: 90%;
             max-width: 450px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: var(--border-thick);
             box-shadow: var(--shadow-hard);
             padding: 2rem;
@@ -74,6 +78,8 @@
             border-radius: 10px;
             backdrop-filter: blur(5px);
             animation: float 6s ease-in-out infinite;
+            z-index: 10;
+            margin-bottom: 40px; /* Spatiu pt ticker */
         }
 
         @keyframes float {
@@ -139,7 +145,8 @@
             padding: 15px 30px;
             border: var(--border-thick);
             box-shadow: var(--shadow-hard);
-            cursor: pointer;
+            cursor: pointer; /* Va fi override de crosshair */
+            cursor: crosshair;
             transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             margin-top: 20px;
             text-transform: uppercase;
@@ -170,7 +177,7 @@
             border: var(--border-thick);
             padding: 15px;
             border-radius: 8px;
-            cursor: pointer;
+            cursor: crosshair;
             transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), background 0.2s;
             position: relative;
             overflow: hidden;
@@ -279,49 +286,61 @@
             50% { opacity: 0; }
         }
 
-        .glitch {
-            position: relative;
-        }
-        
+        /* Glitch text */
+        .glitch { position: relative; }
         .glitch::before, .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         }
-        
         .glitch::before {
-            left: 2px;
-            text-shadow: -1px 0 red;
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+            left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse;
         }
-        
         .glitch::after {
-            left: -2px;
-            text-shadow: -1px 0 blue;
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+            left: -2px; text-shadow: -1px 0 blue; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(13px, 9999px, 81px, 0); } 20% { clip: rect(98px, 9999px, 11px, 0); } 40% { clip: rect(3px, 9999px, 58px, 0); }
+            60% { clip: rect(62px, 9999px, 2px, 0); } 80% { clip: rect(24px, 9999px, 95px, 0); } 100% { clip: rect(45px, 9999px, 31px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(65px, 9999px, 96px, 0); } 20% { clip: rect(9px, 9999px, 4px, 0); } 40% { clip: rect(47px, 9999px, 19px, 0); }
+            60% { clip: rect(83px, 9999px, 73px, 0); } 80% { clip: rect(31px, 9999px, 55px, 0); } 100% { clip: rect(94px, 9999px, 18px, 0); }
         }
 
-        @keyframes glitch-anim {
-            0% { clip: rect(13px, 9999px, 81px, 0); }
-            20% { clip: rect(98px, 9999px, 11px, 0); }
-            40% { clip: rect(3px, 9999px, 58px, 0); }
-            60% { clip: rect(62px, 9999px, 2px, 0); }
-            80% { clip: rect(24px, 9999px, 95px, 0); }
-            100% { clip: rect(45px, 9999px, 31px, 0); }
+        /* --- FLAVOR: SCROLLING TICKER --- */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            overflow: hidden;
+            height: 30px;
+            background-color: var(--dark);
+            padding-left: 100%;
+            box-sizing: content-box;
+            border-top: 2px solid var(--accent);
+            z-index: 1000;
         }
-        
-        @keyframes glitch-anim-2 {
-            0% { clip: rect(65px, 9999px, 96px, 0); }
-            20% { clip: rect(9px, 9999px, 4px, 0); }
-            40% { clip: rect(47px, 9999px, 19px, 0); }
-            60% { clip: rect(83px, 9999px, 73px, 0); }
-            80% { clip: rect(31px, 9999px, 55px, 0); }
-            100% { clip: rect(94px, 9999px, 18px, 0); }
+
+        .ticker {
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+            white-space: nowrap;
+            padding-right: 100%;
+            box-sizing: content-box;
+            animation: ticker 20s linear infinite;
+        }
+
+        .ticker__item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
         }
 
     </style>
@@ -348,7 +367,7 @@
                 Vibe check: <span style="color:var(--secondary); font-weight:900;">IN PROGRESS</span>
             </p>
 
-            <button class="btn-retro" onclick="goToScreen2()">ACCESS SYSTEM ➜</button>
+            <button class="btn-retro" onclick="startExperience()">ACCESS SYSTEM ➜</button>
 
             <p class="disclaimer">
                 *By clicking start, you agree that I have great taste in music (mostly).
@@ -364,12 +383,12 @@
                     <div class="card-header">
                         <div class="card-title">
                             <span class="card-emoji">☕</span> 
-                            <div>Facem Yapping profesional</div>
+                            <div>Lore Dumping Session</div>
                         </div>
                         <span class="card-badge">CLASSY</span>
                     </div>
                     <div class="card-desc">
-                        Ne luam doza zilnica de  cafea la Shake? Still in the talks for it.
+                        Ne luam cafea/ceva bun și facem "Yapping" intensiv. Eu aduc bârfa, tu aduci prezența.
                     </div>
                 </div>
 
@@ -377,12 +396,12 @@
                     <div class="card-header">
                         <div class="card-title">
                             <span class="card-emoji">🚶‍♂️</span> 
-                            <div>Plimbare simpla</div>
+                            <div>Side Quest: Urban Explore</div>
                         </div>
-                        <span class="card-badge">EXPLORE</span>
+                        <span class="card-badge">DLC</span>
                     </div>
                     <div class="card-desc">
-                        Side quest prin oraș. Plimbare prin targul de craciun sau de ce nu patinoar? (iti iau pufuleti cu pizza). 
+                        Plimbare tactică + căutare snacks. Poate Târgul de Crăciun? (Îți iau pufuleți dacă ești cuminte).
                     </div>
                 </div>
 
@@ -390,12 +409,12 @@
                     <div class="card-header">
                         <div class="card-title">
                             <span class="card-emoji">🍿</span> 
-                            <div>Movie</div>
+                            <div>Trauma Bonding (Film)</div>
                         </div>
                         <span class="card-badge">THRILLER</span>
                     </div>
                     <div class="card-desc">
-                        Mergem la filmul cinci nopti la freddy, hau hau hau.
+                        Mergem la FNAF. Șanse de supraviețuire: 50%. Șanse să țip eu: 100%.
                     </div>
                 </div>
             </div>
@@ -417,7 +436,7 @@
         </div>
 
         <footer id="secret-footer">
-            v2.0 | Department of Good Times
+            v2.1 | Department of Good Times
             <div class="hidden-dlc" id="dlc-msg">
                 🏆 ACHIEVEMENT UNLOCKED: Îți iau și desert.
             </div>
@@ -425,10 +444,50 @@
 
     </div>
 
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="ticker__item">BREAKING NEWS: MAJOR VIBE SHIFT DETECTED.</div>
+            <div class="ticker__item">CURRENT STATUS: WAITING FOR USER INPUT.</div>
+            <div class="ticker__item">WEATHER FORECAST: 100% CHANCE OF FUN.</div>
+            <div class="ticker__item">DON'T FORGET TO BRING YOUR SMILE.</div>
+            <div class="ticker__item">SYSTEM OPTIMIZED FOR CUTENESS.</div>
+        </div>
+    </div>
+
     <script>
         let selectedChoice = null;
 
-        function goToScreen2() {
+        // --- AUDIO ENGINE (Synthesized sounds, no files needed) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playBeep(freq = 600, type = 'sine', duration = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playSuccessSound() {
+            playBeep(400, 'square', 0.1);
+            setTimeout(() => playBeep(600, 'square', 0.1), 100);
+            setTimeout(() => playBeep(1000, 'square', 0.3), 200);
+        }
+
+        function playHoverSound() {
+             // Very subtle click
+             playBeep(800, 'sine', 0.05);
+        }
+
+        // --- LOGIC ---
+
+        function startExperience() {
+            playBeep(600, 'triangle', 0.1); // Click sound
             document.getElementById('screen-1').classList.remove('active');
             setTimeout(() => {
                 document.getElementById('screen-2').classList.add('active');
@@ -436,6 +495,7 @@
         }
 
         function selectOption(card, choiceName) {
+            playHoverSound(); // Sound effect
             document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             selectedChoice = choiceName;
@@ -446,27 +506,38 @@
             const errorMsg = document.getElementById('error-message');
             
             if (!selectedChoice) {
+                playBeep(150, 'sawtooth', 0.3); // Error buzz
                 errorMsg.style.display = 'block';
                 return;
             }
 
-            // --- ASTA ESTE PARTEA CARE LIPSEA SAU ERA GRESITA ---
-            // Trimite datele catre server (Python)
+            // FLAVOR: Confetti & Sound
+            playSuccessSound();
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FF90E8', '#23A6D5', '#FFC900']
+            });
+
+            // Send data
             fetch('/choice', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ option: selectedChoice }),
             })
             .then(response => response.json())
             .then(data => console.log('Sent:', data))
             .catch((error) => console.error('Error:', error));
-            // ----------------------------------------------------
 
             document.getElementById('screen-2').classList.remove('active');
             document.getElementById('final-screen').classList.add('active');
         }
+
+        // Hover Sounds for cards
+        document.querySelectorAll('.option-card, .btn-retro').forEach(el => {
+            el.addEventListener('mouseenter', () => playHoverSound());
+        });
 
         // Easter Egg Logic
         const footer = document.getElementById('secret-footer');
@@ -476,6 +547,7 @@
         // Mouse events
         footer.addEventListener('mouseenter', () => {
             hoverTimer = setTimeout(() => {
+                playBeep(1200, 'sine', 0.2); // Secret sound
                 dlcMsg.style.display = 'block';
             }, 2000); 
         });
@@ -488,6 +560,7 @@
         // Touch events
         footer.addEventListener('touchstart', () => {
             hoverTimer = setTimeout(() => {
+                playBeep(1200, 'sine', 0.2);
                 dlcMsg.style.display = 'block';
             }, 2000);
         });
