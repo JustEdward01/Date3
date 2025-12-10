@@ -27,7 +27,7 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            cursor: crosshair; /* FLAVOR: Cursor tactic */
+            cursor: crosshair;
         }
 
         body {
@@ -79,7 +79,7 @@
             backdrop-filter: blur(5px);
             animation: float 6s ease-in-out infinite;
             z-index: 10;
-            margin-bottom: 40px; /* Spatiu pt ticker */
+            margin-bottom: 40px;
         }
 
         @keyframes float {
@@ -145,7 +145,6 @@
             padding: 15px 30px;
             border: var(--border-thick);
             box-shadow: var(--shadow-hard);
-            cursor: pointer; /* Va fi override de crosshair */
             cursor: crosshair;
             transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             margin-top: 20px;
@@ -258,6 +257,40 @@
             line-height: 1.5;
         }
 
+        /* --- DATA PICKER STYLES --- */
+        .date-wrapper {
+            margin-top: 25px;
+            width: 100%;
+        }
+        
+        .date-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--dark);
+        }
+
+        .retro-input {
+            width: 100%;
+            padding: 15px;
+            font-family: 'Inter', sans-serif; /* Mai lizibil pt date */
+            font-weight: bold;
+            font-size: 1rem;
+            border: var(--border-thick);
+            background: #fff;
+            box-shadow: var(--shadow-hover);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            border-radius: 5px;
+        }
+
+        .retro-input:focus {
+            background-color: #fcfce8;
+            box-shadow: var(--shadow-hard);
+        }
+
         footer {
             margin-top: 30px;
             text-align: center;
@@ -306,41 +339,18 @@
             60% { clip: rect(83px, 9999px, 73px, 0); } 80% { clip: rect(31px, 9999px, 55px, 0); } 100% { clip: rect(94px, 9999px, 18px, 0); }
         }
 
-        /* --- FLAVOR: SCROLLING TICKER --- */
+        /* Ticker */
         .ticker-wrap {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            overflow: hidden;
-            height: 30px;
-            background-color: var(--dark);
-            padding-left: 100%;
-            box-sizing: content-box;
-            border-top: 2px solid var(--accent);
-            z-index: 1000;
+            position: fixed; bottom: 0; width: 100%; overflow: hidden; height: 30px; background-color: var(--dark); padding-left: 100%; box-sizing: content-box; border-top: 2px solid var(--accent); z-index: 1000;
         }
-
         .ticker {
-            display: inline-block;
-            height: 30px;
-            line-height: 30px;
-            white-space: nowrap;
-            padding-right: 100%;
-            box-sizing: content-box;
-            animation: ticker 20s linear infinite;
+            display: inline-block; height: 30px; line-height: 30px; white-space: nowrap; padding-right: 100%; box-sizing: content-box; animation: ticker 20s linear infinite;
         }
-
         .ticker__item {
-            display: inline-block;
-            padding: 0 2rem;
-            font-size: 0.7rem;
-            color: var(--accent);
-            font-family: 'Press Start 2P', cursive;
+            display: inline-block; padding: 0 2rem; font-size: 0.7rem; color: var(--accent); font-family: 'Press Start 2P', cursive;
         }
-
         @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
+            0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); }
         }
 
     </style>
@@ -419,7 +429,12 @@
                 </div>
             </div>
 
-            <div id="error-message" class="error-msg">Error 404: Decision not found. Pick a quest.</div>
+            <div class="date-wrapper">
+                <label class="date-label">DEPLOYMENT DATE (WHEN?):</label>
+                <input type="date" id="date-picker" class="retro-input">
+            </div>
+
+            <div id="error-message" class="error-msg">Error 404: Mission or Date missing.</div>
             
             <button class="btn-retro" onclick="confirmChoice()" style="background-color: var(--secondary);">CONFIRM SELECTION</button>
         </div>
@@ -427,7 +442,7 @@
         <div id="final-screen" class="screen" style="text-align: center;">
             <h1 style="color: var(--secondary)">It's a Deal!</h1>
             <div style="font-size: 4rem; margin: 20px 0;">🤝</div>
-            <p style="font-weight: bold; margin-bottom: 20px;">Alegerea a fost înregistrată în baza de date.</p>
+            <p style="font-weight: bold; margin-bottom: 20px;">Alegerea și data au fost salvate.</p>
             <p>I'll handle the rest. See you there.</p>
             <div style="margin-top: 30px; font-family: monospace; background: #000; color: #0f0; padding: 10px;">
                 > STATUS: LOCKED IN<br>
@@ -436,7 +451,7 @@
         </div>
 
         <footer id="secret-footer">
-            v2.1 | Department of Good Times
+            v2.2 | Department of Good Times
             <div class="hidden-dlc" id="dlc-msg">
                 🏆 ACHIEVEMENT UNLOCKED: Îți iau și desert.
             </div>
@@ -450,14 +465,13 @@
             <div class="ticker__item">CURRENT STATUS: WAITING FOR USER INPUT.</div>
             <div class="ticker__item">WEATHER FORECAST: 100% CHANCE OF FUN.</div>
             <div class="ticker__item">DON'T FORGET TO BRING YOUR SMILE.</div>
-            <div class="ticker__item">SYSTEM OPTIMIZED FOR CUTENESS.</div>
         </div>
     </div>
 
     <script>
         let selectedChoice = null;
 
-        // --- AUDIO ENGINE (Synthesized sounds, no files needed) ---
+        // Audio Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playBeep(freq = 600, type = 'sine', duration = 0.1) {
@@ -480,14 +494,11 @@
         }
 
         function playHoverSound() {
-             // Very subtle click
              playBeep(800, 'sine', 0.05);
         }
 
-        // --- LOGIC ---
-
         function startExperience() {
-            playBeep(600, 'triangle', 0.1); // Click sound
+            playBeep(600, 'triangle', 0.1);
             document.getElementById('screen-1').classList.remove('active');
             setTimeout(() => {
                 document.getElementById('screen-2').classList.add('active');
@@ -495,7 +506,7 @@
         }
 
         function selectOption(card, choiceName) {
-            playHoverSound(); // Sound effect
+            playHoverSound();
             document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             selectedChoice = choiceName;
@@ -504,14 +515,16 @@
 
         function confirmChoice() {
             const errorMsg = document.getElementById('error-message');
+            const dateValue = document.getElementById('date-picker').value;
             
-            if (!selectedChoice) {
+            // VALIDATION: Check if both choice AND date are selected
+            if (!selectedChoice || !dateValue) {
                 playBeep(150, 'sawtooth', 0.3); // Error buzz
+                errorMsg.innerText = "Error 404: Mission or Date missing.";
                 errorMsg.style.display = 'block';
                 return;
             }
 
-            // FLAVOR: Confetti & Sound
             playSuccessSound();
             confetti({
                 particleCount: 150,
@@ -520,11 +533,14 @@
                 colors: ['#FF90E8', '#23A6D5', '#FFC900']
             });
 
-            // Send data
+            // SEND DATA (Option + Date)
             fetch('/choice', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ option: selectedChoice }),
+                body: JSON.stringify({ 
+                    option: selectedChoice,
+                    date: dateValue 
+                }),
             })
             .then(response => response.json())
             .then(data => console.log('Sent:', data))
@@ -534,20 +550,18 @@
             document.getElementById('final-screen').classList.add('active');
         }
 
-        // Hover Sounds for cards
         document.querySelectorAll('.option-card, .btn-retro').forEach(el => {
             el.addEventListener('mouseenter', () => playHoverSound());
         });
 
-        // Easter Egg Logic
+        // Easter Egg
         const footer = document.getElementById('secret-footer');
         const dlcMsg = document.getElementById('dlc-msg');
         let hoverTimer;
 
-        // Mouse events
         footer.addEventListener('mouseenter', () => {
             hoverTimer = setTimeout(() => {
-                playBeep(1200, 'sine', 0.2); // Secret sound
+                playBeep(1200, 'sine', 0.2); 
                 dlcMsg.style.display = 'block';
             }, 2000); 
         });
@@ -557,7 +571,6 @@
             dlcMsg.style.display = 'none';
         });
 
-        // Touch events
         footer.addEventListener('touchstart', () => {
             hoverTimer = setTimeout(() => {
                 playBeep(1200, 'sine', 0.2);
