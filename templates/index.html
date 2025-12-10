@@ -45,7 +45,6 @@
             align-items: center;
         }
 
-        /* --- CRT Scanline Effect Overlay --- */
         .scanlines {
             position: fixed;
             top: 0;
@@ -64,7 +63,6 @@
             z-index: 999;
         }
 
-        /* --- Container --- */
         .main-container {
             width: 90%;
             max-width: 450px;
@@ -84,7 +82,6 @@
             100% { transform: translateY(0px); }
         }
 
-        /* --- Typography --- */
         h1, h2, h3 {
             font-family: 'Press Start 2P', cursive;
             line-height: 1.4;
@@ -118,7 +115,6 @@
             width: 100%;
         }
 
-        /* --- Screens Logic --- */
         .screen {
             display: none;
             flex-direction: column;
@@ -135,7 +131,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Buttons --- */
         .btn-retro {
             background: var(--primary);
             color: white;
@@ -163,7 +158,6 @@
             box-shadow: 0px 0px 0px var(--dark);
         }
 
-        /* --- Cards --- */
         .card-container {
             display: flex;
             flex-direction: column;
@@ -238,7 +232,6 @@
             font-weight: 600;
         }
 
-        /* --- Utilities --- */
         .disclaimer {
             font-size: 0.6rem;
             margin-top: 20px;
@@ -258,7 +251,6 @@
             line-height: 1.5;
         }
 
-        /* --- Footer Easter Egg --- */
         footer {
             margin-top: 30px;
             text-align: center;
@@ -287,7 +279,6 @@
             50% { opacity: 0; }
         }
 
-        /* Glitch text effect for title */
         .glitch {
             position: relative;
         }
@@ -360,7 +351,7 @@
             <button class="btn-retro" onclick="goToScreen2()">ACCESS SYSTEM ➜</button>
 
             <p class="disclaimer">
-                *By clicking start, you agree that I Bring only good vibes.
+                *By clicking start, you agree that I have great taste in music (mostly).
             </p>
         </div>
 
@@ -378,7 +369,7 @@
                         <span class="card-badge">CLASSY</span>
                     </div>
                     <div class="card-desc">
-                        Ne luam doza zilnica de  cafea la Shake?Sill in the talks for it.
+                        Ne luam doza zilnica de  cafea la Shake? Still in the talks for it.
                     </div>
                 </div>
 
@@ -391,7 +382,7 @@
                         <span class="card-badge">EXPLORE</span>
                     </div>
                     <div class="card-desc">
-                        Side quest prin oraș. Plimbare prin targul de craciun sau de ce nu patinuar?(iti iau pufuleti cu pizza). 
+                        Side quest prin oraș. Plimbare prin targul de craciun sau de ce nu patinoar? (iti iau pufuleti cu pizza). 
                     </div>
                 </div>
 
@@ -404,7 +395,7 @@
                         <span class="card-badge">THRILLER</span>
                     </div>
                     <div class="card-desc">
-                        Mergem la filmul cinci nopti la freddy ,hau hau hau.
+                        Mergem la filmul cinci nopti la freddy, hau hau hau.
                     </div>
                 </div>
             </div>
@@ -459,9 +450,22 @@
                 return;
             }
 
+            // --- ASTA ESTE PARTEA CARE LIPSEA SAU ERA GRESITA ---
+            // Trimite datele catre server (Python)
+            fetch('/choice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ option: selectedChoice }),
+            })
+            .then(response => response.json())
+            .then(data => console.log('Sent:', data))
+            .catch((error) => console.error('Error:', error));
+            // ----------------------------------------------------
+
             document.getElementById('screen-2').classList.remove('active');
             document.getElementById('final-screen').classList.add('active');
-            console.log("Mission locked: " + selectedChoice);
         }
 
         // Easter Egg Logic
@@ -494,34 +498,6 @@
                if(dlcMsg.style.display === 'block') dlcMsg.style.display = 'none'; 
             }, 3000);
         });
-		function confirmChoice() {
-            const errorMsg = document.getElementById('error-message');
-            
-            if (!selectedChoice) {
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            // Aici trimitem datele catre Python
-            fetch('/choice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ option: selectedChoice }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-
-            // Afisam ecranul de succes imediat pt UX
-            document.getElementById('screen-2').classList.remove('active');
-            document.getElementById('final-screen').classList.add('active');
-        }
     </script>
 </body>
 </html>
