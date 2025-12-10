@@ -11,10 +11,12 @@ def index():
 def choice():
     data = request.get_json() or {}
     option = data.get("option")
+    date_picked = data.get("date")  # <--- Aici prindem data
 
     # Printeaza in Log-urile serverului
     print(f"========================================", file=sys.stderr)
-    print(f"💌 ALEGERE NOUA PRIMITA: {option}", file=sys.stderr)
+    print(f"💌 ALEGERE: {option}", file=sys.stderr)
+    print(f"📅 DATA:    {date_picked}", file=sys.stderr)
     print(f"========================================", file=sys.stderr)
 
     return jsonify({"status": "ok", "received": option})
