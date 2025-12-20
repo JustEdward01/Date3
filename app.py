@@ -12,7 +12,7 @@ app.logger.setLevel(logging.INFO)
 def index():
     # Asta se intampla cand intra pe site
     print("--- 🟢 Cineva a accesat pagina de start (Puzzle) ---", flush=True)
-    return render_template("puzzle.html")
+    return render_template("index.html")
 
 @app.route("/claim", methods=["POST"])
 def claim():
@@ -48,4 +48,5 @@ def claim():
         return jsonify({"status": "error"}), 500
 
 if __name__ == "__main__":
+
     app.run(debug=True)
